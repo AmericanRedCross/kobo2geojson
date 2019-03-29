@@ -1,0 +1,58 @@
+//config.js is not part of the repository.  However, it should be deployed with the application and contain deployment-specific config.
+//there is a config.js.example file that should match the structure and properties of this file that IS checked in to the repo
+
+var config = {}
+
+config.app = {
+	port: 3020
+}
+
+
+config.kobo = {
+	account: "my_account",
+	server: 'https://kc.humanitarianresponse.info',
+	token:"my_token", // from https://kobo.humanitarianresponse.info/token/?format=json
+	form: {
+		formId: "my_formId", 
+		// if there is no image, you'll also need to edit the sql INSERT code in `./routes/ETL.js` 
+		// and you can comment out the creation of `imagerurl` column from `./setup/dbSetup.js`
+		// and you need to delete adding "imageurl," to the `fields` var in `server.js`
+		imageField: "my_imageField", 
+		// use https://kc.humanitarianresponse.info/api/v1/data?format=csv (when signed in) to find the `id` for a form
+		// you can use the value in the `url` column of the above csv to get the form's data which will give you the column headers used below'
+		fields: [
+			// `_uuid`, `_submission_time`, and `_geolocation` are assumed
+			{
+				formKey: "start", // this is the key for the field in the data returned from KoBo
+				name: "first", // this will be the column in the app's PostgreSQL database
+				sqlType: "varchar(50)"
+			},
+			{
+				formKey: "end",
+				name: "last",
+				sqlType: "varchar(50)"
+			},
+			{
+				formKey: "my_formKey1",	
+				name: "my_name1",
+				sqlType: "varchar(50)"
+			},
+			...
+		],
+		dataTranslate : {
+			valueFromKobo : "Human friendly text string",
+			hospital___cli : "Hospital / Clinic / Medical Facility",
+			...
+		}
+	}	
+}
+
+config.pg = {
+	server: 'localhost',
+	port: '5432',
+	database: 'assessment',
+	user: 'my_user',
+	password: 'my_password'
+}
+
+module.exports = config;
