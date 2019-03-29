@@ -1,6 +1,8 @@
 node_modules
 config.js
 notes/*
+tmp/*
+!tmp/README.md
 
 # Base ignores:
 # =============

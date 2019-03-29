@@ -1,3 +1,4 @@
+var fs = require('fs')
 var express = require('express')
 var localConfig = require('./config')
 var CronJob = require('cron').CronJob
@@ -46,6 +47,41 @@ api.get('/all', function(req, res) {
   pghelper.query(sql, function(err, results) {
     if(err) { console.log(err) }
     res.send(results[0]["row_to_json"])
+  })
+})
+
+api.get('/json', function(req, res) {
+  var sql = "SELECT row_to_json(fc) "+
+   "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "+
+   "FROM (SELECT 'Feature' As type "+
+      ", ST_AsGeoJSON(lg.geom)::json As geometry"+
+      ", row_to_json((SELECT l FROM (SELECT " + fields.join(", ") + ") As l"+
+        ")) As properties "+
+     "FROM (SELECT * FROM data.surveys) As lg ) As f )  As fc;";
+  pghelper.query(sql, function(err, results) {
+    if(err) { console.log(err) }
+    res.json(results[0]["row_to_json"])
+  })
+})
+
+api.get('/file', function(req, res) {
+  var sql = "SELECT row_to_json(fc) "+
+   "FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features "+
+   "FROM (SELECT 'Feature' As type "+
+      ", ST_AsGeoJSON(lg.geom)::json As geometry"+
+      ", row_to_json((SELECT l FROM (SELECT " + fields.join(", ") + ") As l"+
+        ")) As properties "+
+     "FROM (SELECT * FROM data.surveys) As lg ) As f )  As fc;";
+  pghelper.query(sql, function(err, results) {
+    if(err) { console.log(err) }
+    fs.writeFileSync('./tmp/map.json', JSON.stringify(results[0]["row_to_json"]), 'utf8', function(err) {
+      if(err) { console.log (err) }
+    })
+    res.download('./tmp/map.json', 'map.json', function(err) {
+      console.log('hey')
+      fs.unlink('./tmp/map.json', function(err) { console.log(err) })
+    })
+    
   })
 })
 
