@@ -52,8 +52,11 @@ nvm install 10.15.2
 - `node ./setup/dbSetup.js` to initialize database
 - install [PM2](https://github.com/Unitech/pm2) `npm install pm2 -g`
   - other tools will let you keep the application up and running on your server (e.g. [Forever](https://github.com/foreverjs/forever))
-- `pm2 start server.js --name="kobo2geojson_3020" --interpreter=/home/ubuntu/.nvm/versions/node/v10.15.2/bin/node` to start the app
-  - to have the app restart itself after a reboot, server downtime, etc., you can generate a startup script
+- start the server
+```
+pm2 start server.js --name="kobo2geojson_3020" --interpreter=/home/ubuntu/.nvm/versions/node/v10.15.2/bin/node
+```
+- to have the app restart itself after a reboot, server downtime, etc., you can generate a startup script
   - see the [PM2 documentation](https://github.com/Unitech/pm2#startup-hooks-generation) on this for more details
 - install nginx
 ```
